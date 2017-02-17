@@ -1,0 +1,17 @@
+%jumbotron
+  %p= "Results for: #{point_a} and #{point_b}"
+  %ul.list-group
+    - spots.each do |spot|
+      %li.list-group-item
+        - if spot.photos.any?
+          %img{src: spot.photos[0].fetch_url(100)}
+        - else
+          %img{src: "http://placehold.it/100x100"}
+        %h3=spot.name
+        - if spot.rating.nil?
+          %p no rating
+        - else
+          .rating-box
+            .rating{style: "width: #{(spot.rating / 5 * 100).round}%"}
+        %p= spot.vicinity
+        %p= "Contact: #{spot.formatted_phone_number || 'no contact details'}"
