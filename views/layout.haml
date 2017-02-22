@@ -6,6 +6,12 @@
 
     %title ❤️️ Meet Halfway
     %link{:crossorigin => "anonymous", :href => "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css", :integrity => "sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u", :rel => "stylesheet"}/
+    %link{:href => "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css", :rel => "stylesheet"}
+    %link{:href => "style.css", :rel => "stylesheet"}
+
+    %script(src="//code.jquery.com/jquery-1.12.0.js")
+    %script(src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.js")
+    %script(src="application.js")
     %script{:crossorigin => "anonymous", :integrity => "sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa", :src => "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"}
   %body
     .container
@@ -18,7 +24,7 @@
               %a{:href => "#"} About
             %li{:role => "presentation"}
               %a{:href => "#"} Contact
-        %h3.text-muted ❤️️ Meet Halfway
+        %h3 ❤️️ Meet Halfway
 
       = yield
 

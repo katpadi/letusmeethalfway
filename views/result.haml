@@ -1,17 +1,63 @@
-%jumbotron
-  %p= "Results for: #{point_a} and #{point_b}"
+%link{:href => "map.css", :rel => "stylesheet"}
+%script{:src => "http://maps.google.com/maps/api/js?key=AIzaSyAo8wIERFyXUkVbHFSFhBjC2adk1EE45OM"}
+%script{:src => "https://cdn.jsdelivr.net/gmap3/7.2.0/gmap3.min.js"}
+:javascript
+  $(document).ready(function(){
+    var center = [14.5809858, 121.0605219];
+    console.log(center);
+    $('.map')
+      .gmap3({
+        center: center,
+        zoom: 15,
+        mapTypeId : google.maps.MapTypeId.ROADMAP
+      })
+      .marker([
+        {
+          position: center,
+          icon: 'http://maps.google.com/mapfiles/marker_yellow.png'
+        }
+      ])
+      .marker([
+        {
+          position: [14.575112,121.051816],
+          icon: 'http://maps.google.com/mapfiles/marker_green.png'
+        }
+      ])
+      .marker([
+        {
+          position: [14.646615, 121.058596],
+          icon: 'http://maps.google.com/mapfiles/marker_yellow.png'
+        }
+      ])
+      .route({
+        origin: { place },
+        destination: { lat: 14.646615, lng: 121.058596},
+        travelMode: google.maps.DirectionsTravelMode.DRIVING
+      })
+      .circle({
+        center: center,
+        radius : 300,
+        fillColor : "#FFAF9F",
+        strokeColor : "#FF512F"
+      });
+
+  });
+.map
+.jumbotron
+  %p= "Results for: #{point_a.formatted_address} and #{point_b.formatted_address}"
   %ul.list-group
     - spots.each do |spot|
       %li.list-group-item
-        - if spot.photos.any?
-          %img{src: spot.photos[0].fetch_url(100)}
-        - else
-          %img{src: "http://placehold.it/100x100"}
+        / - if spot.photos.any?
+        /   %img{src: spot.photos[0].fetch_url(800)}
+        / - else
+        %img{src: "http://placehold.it/100x100"}
         %h3=spot.name
         - if spot.rating.nil?
-          %p no rating
+          %p No rating...
         - else
           .rating-box
             .rating{style: "width: #{(spot.rating / 5 * 100).round}%"}
         %p= spot.vicinity
         %p= "Contact: #{spot.formatted_phone_number || 'no contact details'}"
+        %p= spot.formatted_address

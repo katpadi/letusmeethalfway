@@ -1,13 +1,15 @@
+.map
 .jumbotron
   %h1 Meet Halfway!
   %p.lead Don't go out of your way. Find that sweet spot. Meet halfway.
 
   %form{action: :find, method: :post}
     .form-group
-      %label{:for => "address_a"} Point A
-      %input#address_a.form-control{name: "address_a", placeholder: "Point A...", type: "text"}
+      %label{:for => "place"} Point A
+      %select#place.location-select.form-control{ name: "place", placeholder: "Search point A..."}
 
     .form-group
-      %label{:for => "address_b"} Point B
-      %input#address_b.form-control{name: "address_b", placeholder: "Point B...", type: "text"}
+      %label{:for => "place2"} Point B
+      %select#place2.location-select.form-control{ name: "place2", placeholder: "Search point B..."}
+
     %button.btn.btn-success{:type => "submit"} Find Spots...
