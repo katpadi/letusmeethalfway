@@ -1,6 +1,7 @@
 # app.rb
 require "bundler/setup"
 require "sinatra"
+require 'sinatra/partial'
 require 'geokit'
 require 'google_places'
 
