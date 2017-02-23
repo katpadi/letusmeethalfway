@@ -1,14 +1,16 @@
+#googlemaps
 .jumbotron
-  %h1 Meet Halfway!
-  %p.lead Don't go out of your way. Find that sweet spot. Meet halfway.
+  #find-spots-form
+    %h2 📍Meet Halfway!
+    %p.lead Don't go out of your way. Find that sweet spot. Meet halfway.
 
-  %form{action: :find, method: :post}
-    .form-group
-      %label{:for => "place"} Point A
-      %select#place.location-select.form-control{ name: "place", placeholder: "Search point A..."}
+    %form{action: :find, method: :post}
+      .form-group
+        %label{:for => "place1"} Point A
+        %select#place1.location-select.form-control{ name: "place1"}
 
-    .form-group
-      %label{:for => "place2"} Point B
-      %select#place2.location-select.form-control{ name: "place2", placeholder: "Search point B..."}
-
-    %button.btn.btn-success{:type => "submit"} Find Spots...
+      .form-group
+        %label{:for => "place2"} Point B
+        %select#place2.location-select.form-control{ name: "place2"}
+      .form-group
+        %button.btn.btn-danger{:type => "submit"} Find Spots...

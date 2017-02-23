@@ -9,6 +9,7 @@ function createMarker(latlng, label, html) {
   var marker = new google.maps.Marker({
       position: latlng,
       map: map,
+      animation: google.maps.Animation.BOUNCE,
       title: label,
       zIndex: Math.round(latlng.lat()*-100000)<<5
       });
@@ -21,13 +22,13 @@ function createMarker(latlng, label, html) {
   return marker;
 }
 
-function initialize() {
+function mapItLikeItsHot(lat, lng) {
   directionsDisplay = new google.maps.DirectionsRenderer({suppressMarkers:true});
-  var chicago = new google.maps.LatLng(14.5809858, 121.0605219);
+  var halfway = new google.maps.LatLng(lat, lng);
   var myOptions = {
-    zoom: 6,
+    zoom: 8,
     mapTypeId: google.maps.MapTypeId.ROADMAP,
-    center: chicago
+    center: halfway
   }
   map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
   polyline = new google.maps.Polyline({
@@ -36,12 +37,11 @@ function initialize() {
     strokeWeight: 3
   });
   directionsDisplay.setMap(map);
-  calcRoute();
 }
 
-function calcRoute() {
-  var start = new google.maps.LatLng(14.575361, 121.051794);
-  var end = new google.maps.LatLng(14.581811, 121.060426);
+function calcRoute(start_lat, start_lng, end_lat, end_lng) {
+  var start = new google.maps.LatLng(start_lat, start_lng);
+  var end = new google.maps.LatLng(end_lat, end_lng);
   var travelMode = google.maps.DirectionsTravelMode.DRIVING
 
   var request = {
@@ -57,17 +57,14 @@ function calcRoute() {
       endLocation = new Object();
       directionsDisplay.setDirections(response);
       var route = response.routes[0];
-      // var summaryPanel = document.getElementById("directions_panel");
-      // summaryPanel.innerHTML = "";
-
       // For each route, display summary information.
-var path = response.routes[0].overview_path;
-var legs = response.routes[0].legs;
+      var path = response.routes[0].overview_path;
+      var legs = response.routes[0].legs;
       for (i=0;i<legs.length;i++) {
         if (i == 0) {
           startLocation.latlng = legs[i].start_location;
           startLocation.address = legs[i].start_address;
-          marker = createMarker(legs[i].start_location," fair...midpoint... :-) ","","green");
+          marker = createMarker(legs[i].start_location," Searched places 500 meters around this fair...midpoint... :-) ","","green");
         }
         endLocation.latlng = legs[i].end_location;
         endLocation.address = legs[i].end_address;

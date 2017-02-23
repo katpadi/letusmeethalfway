@@ -1,24 +1,30 @@
-%link{:href => "map.css", :rel => "stylesheet"}
-%script{:src => "http://maps.google.com/maps/api/js?key=AIzaSyAo8wIERFyXUkVbHFSFhBjC2adk1EE45OM"}
-%script{:src => "https://cdn.jsdelivr.net/gmap3/7.2.0/gmap3.min.js"}
-%script{:src => "http://www.geocodezip.com/scripts/v3_epoly.js", :type => "text/javascript"}
-%script(src="map.js")
+.alert.alert-success{:role => "alert"}
+  %strong Spots detected...
+  = "for <strong>#{point_a.vicinity}</strong> and <strong>#{point_b.vicinity}</strong>"
+
 .map#map_canvas
 
-%p= "Results for: #{point_a.formatted_address} and #{point_b.formatted_address}"
-%ul.list-group
+.list-group
   - spots.each do |spot|
-    %li.list-group-item
-      / - if spot.photos.any?
-      /   %img{src: spot.photos[0].fetch_url(800)}
-      / - else
-      %img{src: "http://placehold.it/100x100"}
-      %h3=spot.name
-      - if spot.rating.nil?
-        %p No rating...
-      - else
-        .rating-box
-          .rating{style: "width: #{(spot.rating / 5 * 100).round}%"}
-      %p= spot.vicinity
-      %p= "Contact: #{spot.formatted_phone_number || 'no contact details'}"
-      %p= spot.formatted_address
+    %a.list-group-item{href: "#{spot.url}"}
+      .row
+        .col-md-2
+          - if spot.photos.any?
+            %img{:src => spot.photos.first.fetch_url(100)}
+          - else
+            %img{src: "http://placehold.it/100x100"}
+        .col-md-8
+          %h4.list-group-item-heading= spot.name
+          - unless spot.rating.nil?
+            .rating-box
+              .rating{style: "width: #{(spot.rating / 5 * 100).round}%"}
+          %p.list-group-item-text
+            = spot.vicinity
+            = spot.formatted_address
+            = spot.website
+            = spot.formatted_phone_number
+%script{:src => "http://www.geocodezip.com/scripts/v3_epoly.js", :type => "text/javascript"}
+%script(src="map.js")
+:javascript
+  mapItLikeItsHot(#{lat}, #{lng});
+  calcRoute(#{point_a.lat},#{point_a.lng},#{point_b.lat},#{point_b.lng});
