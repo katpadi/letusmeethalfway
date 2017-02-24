@@ -5,7 +5,7 @@ require 'geokit'
 require 'google_places'
 
 def api_key_lottery
-  ['AIzaSyCLtJtmtmFTFK2nU60mAglHda7tNes3Bfw', 'AIzaSyAtv8Ke-EvwRv50LfZkUsyExN9fP6rVggY', 'AIzaSyCmXhxEx6PVkEo96gHlUJPtRrBqkGiG3FI'].sample
+  ['AIzaSyCjv31Tjen7UEZFDDAUapKdBBlyFK5NKhU', 'AIzaSyCul6M_Lg-ESIom6yzNPxsqHvXApidvMLI', 'AIzaSyCmXhxEx6PVkEo96gHlUJPtRrBqkGiG3FI'].sample
 end
 
 def organize(places)

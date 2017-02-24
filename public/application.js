@@ -68,7 +68,7 @@ function mapItLikeItsHot(lat, lng) {
   directionsDisplay = new google.maps.DirectionsRenderer({suppressMarkers:true});
   var halfway = new google.maps.LatLng(lat, lng);
   var myOptions = {
-    zoom: 14,
+    zoom: 18,
     mapTypeId: google.maps.MapTypeId.ROADMAP,
     center: halfway
   }
@@ -95,9 +95,9 @@ function createMarker(latlng, label, html) {
     var marker = new google.maps.Marker({
           position: latlng,
           map: map,
-          icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
+          icon: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
           title: label,
-          animation: google.maps.Animation.DROP,
+          animation: google.maps.Animation.BOUNCE,
           zIndex: Math.round(latlng.lat()*-100000)<<5
         });
         marker.myname = label;
