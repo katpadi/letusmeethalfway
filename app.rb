@@ -29,14 +29,13 @@ get '/autocomplete.json' do
   end
 end
 
-post '/find' do
+post '/spots' do
+  puts params.inspect
   client = GooglePlaces::Client.new(api_key_lottery)
   place1 = client.spot(params['place1'])
   place2 = client.spot(params['place2'])
-  geo1 = Geokit::Geocoders::GoogleGeocoder.geocode(place1.vicinity)
-  geo2 = Geokit::Geocoders::GoogleGeocoder.geocode(place2.vicinity)
-  halfway = geo1.midpoint_to(geo2)
-  spots = client.spots(halfway.lat, halfway.lng, radius: 500, detail: true, types: ['museum','amusement_park','bar','cafe','restaurant','park','shopping_mall','art_gallery'])
-  haml :result, locals: { spots: spots, point_a: place1, point_b: place2, lat: halfway.lat, lng: halfway.lng }
+  lat = params['midPointLat']
+  lng = params['midPointLng']
+  spots = client.spots(lat, lng, radius: 500, detail: true, types: ['museum','amusement_park','bar','cafe','restaurant','park','shopping_mall','art_gallery'])
+  haml :result, locals: { spots: spots, point_a: place1, point_b: place2, lat: lat, lng: lng }
 end
-

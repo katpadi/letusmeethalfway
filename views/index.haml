@@ -1,11 +1,10 @@
 #googlemaps
-
 .row
   .jumbotron.col-md-5.col-md-offset-3.spot-form
     %h2 📍Meet Halfway!
     %p.lead Don't go out of your way. Find that sweet spot. Meet halfway.
 
-    %form{action: :find, method: :post}
+    %form#places-form{action: :spots, method: :post}
       .form-group
         %label{:for => "place1"} Point A
         %select#place1.location-select.form-control{ name: "place1"}
@@ -14,4 +13,9 @@
         %label{:for => "place2"} Point B
         %select#place2.location-select.form-control{ name: "place2"}
       .form-group
-        %button.btn.btn-danger{:type => "submit"} Find Spots...
+        %input#midPointLat{type: "hidden", name: "midPointLat"}
+        %input#midPointLng{type: "hidden", name: "midPointLng"}
+        %input#tempLat{type: "hidden"}
+        %input#tempLng{type: "hidden"}
+      .form-group
+        %button.btn.btn-danger#spot-button{:type => "button"} Find Spots...

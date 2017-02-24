@@ -1,6 +1,6 @@
 .alert.alert-success{:role => "alert"}
-  %strong Spots detected...
-  = " for <strong>#{point_a.vicinity}</strong> and <strong>#{point_b.vicinity}</strong>"
+  %strong Cool spots detected!!!
+  = " for <strong>#{point_a.name}</strong> and <strong>#{point_b.name}</strong>"
 
 .map#map_canvas
 
@@ -23,8 +23,9 @@
             = spot.formatted_address
             = spot.website
             = spot.formatted_phone_number
-%script{:src => "http://www.geocodezip.com/scripts/v3_epoly.js", :type => "text/javascript"}
-%script(src="map.js")
 :javascript
   mapItLikeItsHot(#{lat}, #{lng});
-  calcRoute(#{point_a.lat},#{point_a.lng},#{point_b.lat},#{point_b.lng});
+  var origin = new google.maps.LatLng(#{point_a.lat}, #{point_a.lng})
+  var destination = new google.maps.LatLng(#{point_b.lat}, #{point_b.lng})
+  var noop = function(){}; // do nothing.
+  calcRoute(origin, destination, noop);
