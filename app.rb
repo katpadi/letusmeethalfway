@@ -16,6 +16,14 @@ def organize(places)
   formatted_places.to_json
 end
 
+def spots_json(spots)
+  coords = []
+  spots.each do |spot|
+    coords << { lat: spot.lat, lng: spot.lng, name: spot.name, icon: spot.icon }
+  end
+  coords.to_json
+end
+
 get '/' do
   haml :index
 end
@@ -37,5 +45,5 @@ post '/spots' do
   lat = params['midPointLat']
   lng = params['midPointLng']
   spots = client.spots(lat, lng, radius: 500, detail: true, types: ['museum','amusement_park','bar','cafe','restaurant','park','shopping_mall','art_gallery'])
-  haml :result, locals: { spots: spots, point_a: place1, point_b: place2, lat: lat, lng: lng }
+  haml :result, locals: { s: spots_json(spots), spots: spots, point_a: place1, point_b: place2, lat: lat, lng: lng }
 end

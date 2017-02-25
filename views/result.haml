@@ -37,8 +37,9 @@
                 = spot.website
                 = spot.formatted_phone_number
 :javascript
-  mapItLikeItsHot(#{lat}, #{lng});
+  mapItLikeItsHot(#{lat}, #{lng}, #{s});
   var origin = new google.maps.LatLng(#{point_a.lat}, #{point_a.lng})
   var destination = new google.maps.LatLng(#{point_b.lat}, #{point_b.lng})
   var noop = function(){}; // do nothing.
   calcRoute(origin, destination, noop);
+

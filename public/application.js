@@ -68,7 +68,37 @@ $(document).ready(function(){
   });
 });
 
-function mapItLikeItsHot(lat, lng) {
+function plotEmSpots(s) {
+  var marker, i;
+
+  for (i = 0; i < s.length; i++) {
+    marker = new google.maps.Marker({
+      position: new google.maps.LatLng(s[i].lat, s[i].lng),
+      icon: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
+      title: s[i].name,
+      animation: google.maps.Animation.DROP,
+      map: map
+    });
+    marker.myname = s[i].name;
+    var infoWindow = new google.maps.InfoWindow();
+    var content = '<b>'+s[i].name+'</b><br></b><br>'+"Let's meet here?";
+    google.maps.event.addListener(marker,'click', (function(marker,content,infowindow){
+        return function() {
+            infoWindow.setContent(content);
+            infoWindow.open(map,marker);
+        };
+    })(marker,content,infoWindow));
+  }
+}
+
+
+
+
+
+
+
+
+function mapItLikeItsHot(lat, lng, s) {
   directionsDisplay = new google.maps.DirectionsRenderer({suppressMarkers:true});
   var halfway = new google.maps.LatLng(lat, lng);
   var myOptions = {
@@ -83,6 +113,8 @@ function mapItLikeItsHot(lat, lng) {
     strokeWeight: 3
   });
   directionsDisplay.setMap(map);
+
+  plotEmSpots(s)
 }
 
 function geocodePlaceIdX(geocoder, placeId, callback) {
@@ -99,9 +131,9 @@ function createMarker(latlng, label, html) {
     var marker = new google.maps.Marker({
           position: latlng,
           map: map,
-          icon: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
+          icon: 'http://maps.google.com/mapfiles/ms/icons/red-pushpin.png',
           title: label,
-          animation: google.maps.Animation.DROP,
+          animation: google.maps.Animation.BOUNCE,
           zIndex: Math.round(latlng.lat()*-100000)<<5
         });
         marker.myname = label;
@@ -166,8 +198,6 @@ function initialize() {
 
 }
 
-
-
 function calcRoute(start, end, callback) {
   // var start = new google.maps.LatLng(14.575423, 121.051771);
   // var end = new google.maps.LatLng(14.570286, 121.047089);
@@ -194,7 +224,7 @@ function calcRoute(start, end, callback) {
         if (i == 0) {
           startLocation.latlng = legs[i].start_location;
           startLocation.address = legs[i].start_address;
-          marker = createMarker(legs[i].start_location,"midpoint","","green");
+          marker = createMarker(legs[i].start_location,"So, this is the actual midpoint.<br>I searched places within 500-meter radius from here.","","green");
         }
         endLocation.latlng = legs[i].end_location;
         endLocation.address = legs[i].end_address;
