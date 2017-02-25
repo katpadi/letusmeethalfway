@@ -1,28 +1,30 @@
-.alert.alert-success{:role => "alert"}
-  %strong Cool spots detected!!!
-  = " for <strong>#{point_a.name}</strong> and <strong>#{point_b.name}</strong>"
+.row
+  .alert.alert-success{:role => "alert"}
+    %strong Cool spots detected!!!
+    = " for <strong>#{point_a.name}</strong> and <strong>#{point_b.name}</strong>"
 
-.map#map_canvas
-
-.list-group
-  - spots.each do |spot|
-    %a.list-group-item{href: "#{spot.url}"}
-      .row
-        .col-md-2
-          - if spot.photos.any?
-            %img{:src => spot.photos.first.fetch_url(100)}
-          - else
-            %img{src: "http://placehold.it/100x100"}
-        .col-md-8
-          %h4.list-group-item-heading= spot.name
-          - unless spot.rating.nil?
-            .rating-box
-              .rating{style: "width: #{(spot.rating / 5 * 100).round}%"}
-          %p.list-group-item-text
-            = spot.vicinity
-            = spot.formatted_address
-            = spot.website
-            = spot.formatted_phone_number
+  .col-md-7
+    .list-group
+      - spots.each do |spot|
+        %a.list-group-item{href: "#{spot.url}"}
+          .row
+            .col-md-2
+              - if spot.photos.any?
+                %img{:src => spot.photos.first.fetch_url(100)}
+              - else
+                %img{src: "http://placehold.it/100x100"}
+            .col-md-8
+              %h4.list-group-item-heading= spot.name
+              - unless spot.rating.nil?
+                .rating-box
+                  .rating{style: "width: #{(spot.rating / 5 * 100).round}%"}
+              %p.list-group-item-text
+                = spot.vicinity
+                = spot.formatted_address
+                = spot.website
+                = spot.formatted_phone_number
+  .col-md-5
+    .map#map_canvas
 :javascript
   mapItLikeItsHot(#{lat}, #{lng});
   var origin = new google.maps.LatLng(#{point_a.lat}, #{point_a.lng})

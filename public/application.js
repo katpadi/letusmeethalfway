@@ -14,6 +14,7 @@ $(document).ready(function(){
       placeholder: "Select a place...",
       allowClear: true,
       minimumInputLength: 1,
+      triggerChange: true,
       ajax: {
           url: window.location.origin + "/autocomplete.json",
           dataType: 'json',
@@ -54,6 +55,7 @@ $(document).ready(function(){
       });
 
       $.when(coords1, coords2).done(function(start, end){
+        $(".spot-form").fadeTo( "slow", 0 );
         calcRoute(start, end, function(halfway) {
           $("#midPointLat").val(halfway.lat());
           $("#midPointLng").val(halfway.lng());
@@ -68,14 +70,14 @@ function mapItLikeItsHot(lat, lng) {
   directionsDisplay = new google.maps.DirectionsRenderer({suppressMarkers:true});
   var halfway = new google.maps.LatLng(lat, lng);
   var myOptions = {
-    zoom: 18,
+    zoom: 22,
     mapTypeId: google.maps.MapTypeId.ROADMAP,
     center: halfway
   }
   map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
   polyline = new google.maps.Polyline({
     path: [],
-    strokeColor: '#FF0000',
+    strokeColor: '#8b0000',
     strokeWeight: 3
   });
   directionsDisplay.setMap(map);
@@ -95,9 +97,9 @@ function createMarker(latlng, label, html) {
     var marker = new google.maps.Marker({
           position: latlng,
           map: map,
-          icon: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
+          icon: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
           title: label,
-          animation: google.maps.Animation.BOUNCE,
+          animation: google.maps.Animation.DROP,
           zIndex: Math.round(latlng.lat()*-100000)<<5
         });
         marker.myname = label;
@@ -201,9 +203,18 @@ function computeTotalDistance(result, callback) {
     totalDist += myroute.legs[i].distance.value;
     totalTime += myroute.legs[i].duration.value;
   }
-  putMarkerOnRoute(50);
   halfway = polyline.GetPointAtDistance((50/100) * totalDist);
   callback(halfway);
+
+  putMarkerOnRoute(50);
+  // Add circle overlay and bind to marker
+  var circle = new google.maps.Circle({
+    map: map,
+    radius: 500,
+    fillColor: '#AA0000'
+  });
+  circle.bindTo('center', marker, 'position');
+
   // alert("total distance is: "+ totalDist + " km<br>total time is: " + (totalTime / 60).toFixed(2) + " minutes");
 // document.getElementById("total").innerHTML = "total distance is: "+ totalDist + " km<br>total time is: " + (totalTime / 60).toFixed(2) + " minutes";
 }
