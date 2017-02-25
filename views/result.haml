@@ -1,8 +1,21 @@
 .row
-  .alert.alert-success{:role => "alert"}
-    %strong Cool spots detected!!!
-    = " for <strong>#{point_a.name}</strong> and <strong>#{point_b.name}</strong>"
+  .col-md-12
+    - if spots.any?
+      .alert.alert-success{:role => "alert"}
+        %strong Awesome spots detected for
+        = " for <strong>#{point_a.name}</strong> and <strong>#{point_b.name}</strong>. Check out the restaurats/cafes below the map."
 
+    - else
+      .alert.alert-danger{:role => "alert"}
+        %strong Sorry. No awesome spots detected
+        = " for <strong>#{point_a.name}</strong> and <strong>#{point_b.name}</strong> at the moment :(. I'm still working on an algorithm that will extend the radius if no spots are within the midpoint."
+    %p.lead.text-center
+      %a{:href => "/"}
+        %span.glyphicon.glyphicon-repeat
+        Search again?
+
+  .col-md-5
+    .map#map_canvas
   .col-md-7
     .list-group
       - spots.each do |spot|
@@ -23,8 +36,6 @@
                 = spot.formatted_address
                 = spot.website
                 = spot.formatted_phone_number
-  .col-md-5
-    .map#map_canvas
 :javascript
   mapItLikeItsHot(#{lat}, #{lng});
   var origin = new google.maps.LatLng(#{point_a.lat}, #{point_a.lng})

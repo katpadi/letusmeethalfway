@@ -4,6 +4,7 @@ var directionsService = new google.maps.DirectionsService();
 var map;
 var polyline = null;
 var infowindow = new google.maps.InfoWindow();
+var initMarker;
 $(document).ready(function(){
 
   if($("#googlemaps").length > 0) {
@@ -56,6 +57,7 @@ $(document).ready(function(){
 
       $.when(coords1, coords2).done(function(start, end){
         $(".spot-form").fadeTo( "slow", 0 );
+        removeMarkerWithAnimation(map, initMarker);
         calcRoute(start, end, function(halfway) {
           $("#midPointLat").val(halfway.lat());
           $("#midPointLng").val(halfway.lng());
@@ -111,87 +113,109 @@ function createMarker(latlng, label, html) {
     return marker;
 }
 
-  function initialize() {
-    directionsDisplay = new google.maps.DirectionsRenderer({suppressMarkers:true});
-    var latLng = new google.maps.LatLng(14.5747264,121.0489297);
-    var center = new google.maps.LatLng(14.577417, 121.052320);
-    var myOptions = {
-      zoom: 16, // initialize zoom level - the max value is 21
-      streetViewControl: false, // hide the yellow Street View pegman
-      scaleControl: false, // allow users to zoom the Google Map
-      mapTypeId: google.maps.MapTypeId.ROADMAP,
-      center: center
-    }
-    map = new google.maps.Map(document.getElementById("googlemaps"), myOptions);
+function removeMarkerWithAnimation(map, marker){
+    (function animationStep(){
+        //Converting GPS to World Coordinates
+        var newPosition = map.getProjection().fromLatLngToPoint(marker.getPosition());
 
-    // Show the default red marker at the location
-    marker = new google.maps.Marker({
-        position: latLng,
-        zoom: 16,
-        map: map,
-        draggable: false,
-        animation: google.maps.Animation.BOUNCE
-    });
+        //Moving 10px to up
+        newPosition.y -= 10 / (1 << map.getZoom());
 
-    polyline = new google.maps.Polyline({
-      path: [],
-      strokeColor: '#FF0000',
-      strokeWeight: 3
-    });
-    directionsDisplay.setMap(map);
+        //Converting World Coordinates to GPS
+        newPosition = map.getProjection().fromPointToLatLng(newPosition);
+        //updating maker's position
+        marker.setPosition( newPosition );
+        //Checking whether marker is out of bounds
+        if( map.getBounds().getNorthEast().lat() < newPosition.lat() ){
+            marker.setMap(null);
+        }else{
+            //Repeating animation step
+            setTimeout(animationStep,20);
+        }
+    })();
+}
 
+function initialize() {
+  directionsDisplay = new google.maps.DirectionsRenderer({suppressMarkers:true});
+  var latLng = new google.maps.LatLng(14.5751172,121.0496216);
+  var center = new google.maps.LatLng(14.5741938,121.0414212);
+  var myOptions = {
+    zoom: 16, // initialize zoom level - the max value is 21
+    streetViewControl: false, // hide the yellow Street View pegman
+    scaleControl: false, // allow users to zoom the Google Map
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+    center: center
   }
+  map = new google.maps.Map(document.getElementById("googlemaps"), myOptions);
+
+  // Show the default red marker at the location
+  initMarker = new google.maps.Marker({
+      position: latLng,
+      zoom: 16,
+      map: map,
+      draggable: false,
+      animation: google.maps.Animation.BOUNCE
+  });
+
+  polyline = new google.maps.Polyline({
+    path: [],
+    strokeColor: '#FF0000',
+    strokeWeight: 3
+  });
+  directionsDisplay.setMap(map);
+
+}
 
 
 
-  function calcRoute(start, end, callback) {
-    // var start = new google.maps.LatLng(14.575423, 121.051771);
-    // var end = new google.maps.LatLng(14.570286, 121.047089);
-    var travelMode = google.maps.DirectionsTravelMode.DRIVING
+function calcRoute(start, end, callback) {
+  // var start = new google.maps.LatLng(14.575423, 121.051771);
+  // var end = new google.maps.LatLng(14.570286, 121.047089);
+  var travelMode = google.maps.DirectionsTravelMode.DRIVING
 
-    var request = {
-        origin: start,
-        destination: end,
-        travelMode: travelMode
-    };
-    directionsService.route(request, function(response, status) {
-      if (status == google.maps.DirectionsStatus.OK) {
-        polyline.setPath([]);
-        var bounds = new google.maps.LatLngBounds();
-        startLocation = new Object();
-        endLocation = new Object();
-        directionsDisplay.setDirections(response);
-        var route = response.routes[0];
+  var request = {
+      origin: start,
+      destination: end,
+      travelMode: travelMode
+  };
+  directionsService.route(request, function(response, status) {
+    if (status == google.maps.DirectionsStatus.OK) {
+      polyline.setPath([]);
+      var bounds = new google.maps.LatLngBounds();
+      startLocation = new Object();
+      endLocation = new Object();
+      directionsDisplay.setDirections(response);
+      var route = response.routes[0];
 
-        // For each route, display summary information.
-    var path = response.routes[0].overview_path;
-    var legs = response.routes[0].legs;
-        for (i=0;i<legs.length;i++) {
-          if (i == 0) {
-            startLocation.latlng = legs[i].start_location;
-            startLocation.address = legs[i].start_address;
-            marker = createMarker(legs[i].start_location,"midpoint","","green");
-          }
-          endLocation.latlng = legs[i].end_location;
-          endLocation.address = legs[i].end_address;
-          var steps = legs[i].steps;
-          for (j=0;j<steps.length;j++) {
-            var nextSegment = steps[j].path;
-            for (k=0;k<nextSegment.length;k++) {
-              polyline.getPath().push(nextSegment[k]);
-              bounds.extend(nextSegment[k]);
-            }
+      // For each route, display summary information.
+  var path = response.routes[0].overview_path;
+  var legs = response.routes[0].legs;
+      for (i=0;i<legs.length;i++) {
+        if (i == 0) {
+          startLocation.latlng = legs[i].start_location;
+          startLocation.address = legs[i].start_address;
+          marker = createMarker(legs[i].start_location,"midpoint","","green");
+        }
+        endLocation.latlng = legs[i].end_location;
+        endLocation.address = legs[i].end_address;
+        var steps = legs[i].steps;
+        for (j=0;j<steps.length;j++) {
+          var nextSegment = steps[j].path;
+          for (k=0;k<nextSegment.length;k++) {
+            polyline.getPath().push(nextSegment[k]);
+            bounds.extend(nextSegment[k]);
           }
         }
-
-        polyline.setMap(map);
-
-        computeTotalDistance(response, function(x) {callback(x)});
-      } else {
-        alert("directions response "+status);
       }
-    });
-  }
+
+      polyline.setMap(map);
+
+      computeTotalDistance(response, function(x) {callback(x)});
+    } else {
+      alert("directions response "+status);
+    }
+  });
+}
 
 var totalDist = 0;
 var totalTime = 0;
