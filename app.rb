@@ -1,7 +1,6 @@
 # app.rb
 require "bundler/setup"
 require "sinatra"
-require 'geokit'
 require 'google_places'
 
 def api_key_lottery
@@ -38,12 +37,11 @@ get '/autocomplete.json' do
 end
 
 post '/spots' do
-  puts params.inspect
   client = GooglePlaces::Client.new(api_key_lottery)
   place1 = client.spot(params['place1'])
   place2 = client.spot(params['place2'])
   lat = params['midPointLat']
   lng = params['midPointLng']
-  spots = client.spots(lat, lng, radius: 500, detail: true, types: ['museum','amusement_park','bar','cafe','restaurant','park','shopping_mall','art_gallery'])
+  spots = client.spots(lat, lng, radius: 500, detail: true, types: ['bar','cafe','restaurant','shopping_mall'])
   haml :result, locals: { s: spots_json(spots), spots: spots, point_a: place1, point_b: place2, lat: lat, lng: lng }
 end

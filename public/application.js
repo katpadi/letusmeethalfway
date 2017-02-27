@@ -42,7 +42,6 @@ $(document).ready(function(){
     var selectorId = this.id;
     var infoWindow = new google.maps.InfoWindow();
     var service = new google.maps.places.PlacesService(map);
-    var dirDisplay = new google.maps.DirectionsRenderer();
     var bounds = new google.maps.LatLngBounds();
 
     removeMarkerWithAnimation(map, initMarker);
@@ -283,7 +282,7 @@ function calcRoute(start, end, callback) {
         if (i == 0) {
           startLocation.latlng = legs[i].start_location;
           startLocation.address = legs[i].start_address;
-          marker = createMarker(legs[i].start_location,"So, this is the actual midpoint.<br>I searched places within 500-meter radius from here.","","green");
+          marker = createMarker(legs[i].start_location,"So, this is the actual halfway route midpoint.<br>I searched places within 500-meter radius from here.","","green");
         }
         endLocation.latlng = legs[i].end_location;
         endLocation.address = legs[i].end_address;
