@@ -5,6 +5,7 @@ var map;
 var polyline = null;
 var infowindow = new google.maps.InfoWindow();
 var initMarker;
+var pointMarkers = {};
 $(document).ready(function(){
 
   if($("#googlemaps").length > 0) {
@@ -36,8 +37,53 @@ $(document).ready(function(){
             };
           }
       },
-  });
+  }).on('change', function(e) {
+    var placeId = this.value;
+    var selectorId = this.id;
+    var infoWindow = new google.maps.InfoWindow();
+    var service = new google.maps.places.PlacesService(map);
+    var dirDisplay = new google.maps.DirectionsRenderer();
+    var bounds = new google.maps.LatLngBounds();
 
+    removeMarkerWithAnimation(map, initMarker);
+
+    service.getDetails({
+      placeId: placeId
+    }, function(result, status) {
+      if (status != google.maps.places.PlacesServiceStatus.OK) {
+        alert(status);
+        return;
+      }
+
+      if (pointMarkers.hasOwnProperty(selectorId)) {
+        removeMarkerWithAnimation(map, pointMarkers[selectorId])
+      }
+
+      var marker = new google.maps.Marker({
+        map: map,
+        icon: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
+        animation: google.maps.Animation.DROP,
+        position: result.geometry.location
+      });
+
+      infoWindow.setContent(result.name);
+      infoWindow.open(map, marker);
+      pointMarkers[selectorId] = marker;
+
+      for (var key in pointMarkers) {
+        bounds.extend(pointMarkers[key].position);
+      }
+
+      if (Object.keys(pointMarkers).length == 2) {
+        //now fit the map to the newly inclusive bounds
+        map.fitBounds(bounds);
+
+        // get route from A to B
+        getDirections(pointMarkers['place1'], pointMarkers['place2'])
+
+      }
+    });
+  });
 
   $("#spot-button").click(function(event) {
       event.preventDefault();
@@ -56,17 +102,33 @@ $(document).ready(function(){
       });
 
       $.when(coords1, coords2).done(function(start, end){
-        $(".spot-form").fadeTo( "slow", 0 );
-        removeMarkerWithAnimation(map, initMarker);
-        calcRoute(start, end, function(halfway) {
-          $("#midPointLat").val(halfway.lat());
-          $("#midPointLng").val(halfway.lng());
-          $("form#places-form").submit();
+        $(".spot-form").fadeOut('slow', 0);
+        $(".spot-form").promise().done(function(){
+            // will be called when all the animations on the queue finish
+            calcRoute(start, end, function(halfway) {
+            $("#midPointLat").val(halfway.lat());
+            $("#midPointLng").val(halfway.lng());
+            $("form#places-form").submit();
+          });
         });
 
       });
   });
 });
+
+function getDirections(origin, destination) {
+    directionsDisplay.setMap(map);
+    var request = {
+        origin: origin.position,
+        destination: destination.position,
+        travelMode: google.maps.TravelMode.DRIVING
+    };
+    directionsService.route(request, function (result, status) {
+        if (status == google.maps.DirectionsStatus.OK) {
+            directionsDisplay.setDirections(result);
+        }
+    });
+}
 
 function plotEmSpots(s) {
   var marker, i;
@@ -92,14 +154,8 @@ function plotEmSpots(s) {
 }
 
 
-
-
-
-
-
-
 function mapItLikeItsHot(lat, lng, s) {
-  directionsDisplay = new google.maps.DirectionsRenderer({suppressMarkers:true});
+  directionsDisplay = new google.maps.DirectionsRenderer();
   var halfway = new google.maps.LatLng(lat, lng);
   var myOptions = {
     zoom: 22,
@@ -146,25 +202,28 @@ function createMarker(latlng, label, html) {
 }
 
 function removeMarkerWithAnimation(map, marker){
-    (function animationStep(){
-        //Converting GPS to World Coordinates
-        var newPosition = map.getProjection().fromLatLngToPoint(marker.getPosition());
+    var markerExists = map.getBounds().contains(marker.getPosition());
+      if (markerExists) {
+        (function animationStep(){
+            //Converting GPS to World Coordinates
+            var newPosition = map.getProjection().fromLatLngToPoint(marker.getPosition());
 
-        //Moving 10px to up
-        newPosition.y -= 10 / (1 << map.getZoom());
+            //Moving 10px to up
+            newPosition.y -= 20 / (1 << map.getZoom());
 
-        //Converting World Coordinates to GPS
-        newPosition = map.getProjection().fromPointToLatLng(newPosition);
-        //updating maker's position
-        marker.setPosition( newPosition );
-        //Checking whether marker is out of bounds
-        if( map.getBounds().getNorthEast().lat() < newPosition.lat() ){
-            marker.setMap(null);
-        }else{
-            //Repeating animation step
-            setTimeout(animationStep,20);
-        }
-    })();
+            //Converting World Coordinates to GPS
+            newPosition = map.getProjection().fromPointToLatLng(newPosition);
+            //updating maker's position
+            marker.setPosition( newPosition );
+            //Checking whether marker is out of bounds
+            if( map.getBounds().getNorthEast().lat() < newPosition.lat() ){
+                marker.setMap(null);
+            }else{
+                //Repeating animation step
+                setTimeout(animationStep,20);
+            }
+        })();
+      }
 }
 
 function initialize() {
@@ -172,7 +231,7 @@ function initialize() {
   var latLng = new google.maps.LatLng(14.5751172,121.0496216);
   var center = new google.maps.LatLng(14.5741938,121.0414212);
   var myOptions = {
-    zoom: 16, // initialize zoom level - the max value is 21
+    zoom: 14, // initialize zoom level - the max value is 21
     streetViewControl: false, // hide the yellow Street View pegman
     scaleControl: false, // allow users to zoom the Google Map
     mapTypeId: google.maps.MapTypeId.ROADMAP,
