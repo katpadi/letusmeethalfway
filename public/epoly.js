@@ -56,16 +56,6 @@
 * Version 3.0       11-Aug-2010  update to v3                         *
 *                                                                     *
 \*********************************************************************/
-// REMOVE - REMOVE - REMOVE - REMOVE - REMOVE - REMOVE - REMOVE - REMOVE - REMOVE - REMOVE
-// Remove this block after saving the file to your server
-    if ((window.location.host != 'geocodezip.com') &&
-        (window.location.host != 'www.geocodezip.com') &&
-        (window.location.host != 'fiddle.jshell.net')) {
-      alert('Please do not hotlink this script.\n Save this file to your own server instead and remove this message. ('+window.location.host+')');
-//    return;
-  }
-// END Remove
-// END REMOVE - END REMOVE - END REMOVE - END REMOVE - END REMOVE - END REMOVE - END REMOVE
 
 // === first support methods that don't (yet) exist in v3
 google.maps.LatLng.prototype.distanceFrom = function(newLatLng) {
